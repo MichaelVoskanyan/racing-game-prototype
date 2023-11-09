@@ -59,7 +59,7 @@ func _process(delta):
 	#brake = (2 - (brakeVal + 1)) * MAX_BRAKE_FORCE
 	engine_force = lerp(engine_force, accelVal * MAX_ENGINE_FORCE, delta * 2.0)
 	brake = lerp(brake, brakeVal * MAX_BRAKE_FORCE, delta * 5.0)
-	steering = lerp(steering, steerVal, delta * 15.0)
+	steering = lerp(steering, steerVal, delta * 5.0)
 	
 	
 	## Debug pedal values

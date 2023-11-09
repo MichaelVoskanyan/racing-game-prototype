@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://dpsewvjm4jm6y"]
+[gd_scene load_steps=15 format=3 uid="uid://dpsewvjm4jm6y"]
 
 [ext_resource type="PackedScene" uid="uid://bn57g0a3y27yk" path="res://Assets/Cars/nissan_gtr.tscn" id="2_ip75f"]
 [ext_resource type="PackedScene" uid="uid://dxlwpoc8iay1b" path="res://Assets/Roads/road_curve.tscn" id="3_1dkm3"]
@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://lmcqertjfa4m" path="res://Assets/Roads/road_straight.tscn" id="4_ejiun"]
 [ext_resource type="PackedScene" uid="uid://d1qb0lfhdqctr" path="res://Assets/Roads/road_bridge.tscn" id="4_tv5ue"]
 [ext_resource type="PackedScene" uid="uid://cu168aspphjfv" path="res://Assets/Roads/road_bend.tscn" id="5_mekgt"]
+[ext_resource type="PackedScene" uid="uid://ufq8vn6bvmq7" path="res://Assets/Roads/road_slant.tscn" id="6_lp5ri"]
 [ext_resource type="PackedScene" uid="uid://cyr6xu4pu2ubm" path="res://Assets/Roads/road_slant_curve.tscn" id="7_ieb8o"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_ies8j"]
@@ -50,11 +51,6 @@ transform = Transform3D(0.999988, -0.00495671, 0, 0.00495671, 0.999988, 0, 0, 0,
 mesh = SubResource("BoxMesh_peywa")
 surface_material_override/0 = SubResource("StandardMaterial3D_xfrl3")
 
-[node name="Nissan GTR" parent="." instance=ExtResource("2_ip75f")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00087738, 1, -0.000598907)
-MAX_ENGINE_FORCE = 200.0
-MAX_BRAKE_FORCE = 200.0
-
 [node name="Road" type="Node3D" parent="."]
 
 [node name="road_straight" parent="Road" instance=ExtResource("4_ejiun")]
@@ -67,19 +63,31 @@ transform = Transform3D(-6.55671e-07, 0, 15, 0, 15, 0, -15, 0, -6.55671e-07, 0, 
 transform = Transform3D(-6.55671e-07, 0, -15, 0, 15, 0, 15, 0, -6.55671e-07, 0, 0, 15)
 
 [node name="road_curve" parent="Road" instance=ExtResource("3_1dkm3")]
-transform = Transform3D(-6.55671e-07, 0, 15, 0, 15, 0, -15, 0, -6.55671e-07, -8, 0, 35)
+transform = Transform3D(-6.55671e-07, 0, 15, 0, 15, 0, -15, 0, -6.55671e-07, -7.5, 0, 37)
 
 [node name="road_slantCurve" parent="Road" instance=ExtResource("7_ieb8o")]
-transform = Transform3D(15, 0, 0, 0, 15, 0, 0, 0, 15, -38, 0, 42.5057)
+transform = Transform3D(15, 0, 0, 0, 15, 0, 0, 0, 15, -37, 0, 44.5)
 
 [node name="road_curve2" parent="Road" instance=ExtResource("3_1dkm3")]
-transform = Transform3D(15, 0, 0, 0, 15, 0, 0, 0, 15, -68, 7.5, 35)
+transform = Transform3D(15, 0, 0, 0, 15, 0, 0, 0, 15, -67, 7.5, 37)
 
 [node name="road_bend" parent="Road" instance=ExtResource("5_mekgt")]
-transform = Transform3D(-6.55671e-07, 0, -15, 0, 15, 0, 15, 0, -6.55671e-07, -75.5, 7.5, 12.5)
+transform = Transform3D(-6.55671e-07, 0, -15, 0, 15, 0, 15, 0, -6.55671e-07, -74.5, 7.5, 15)
 
 [node name="road_straight2" parent="Road" instance=ExtResource("4_ejiun")]
-transform = Transform3D(15, 0, 0, 0, 15, 0, 0, 0, 15, -60.506, 7.5, 12.51)
+transform = Transform3D(15, 0, 0, 0, 15, 0, 0, 0, 15, -60, 7.5, 15)
 
 [node name="road_straight3" parent="Road" instance=ExtResource("4_ejiun")]
-transform = Transform3D(15, 0, 0, 0, 15, 0, 0, 0, 15, -45.506, 7.5, 12.51)
+transform = Transform3D(15, 0, 0, 0, 15, 0, 0, 0, 15, -45, 7.5, 15)
+
+[node name="road_straight4" parent="Road" instance=ExtResource("4_ejiun")]
+transform = Transform3D(15, 0, 0, 0, 15, 0, 0, 0, 15, -30, 7.5, 15)
+
+[node name="road_straight5" parent="Road" instance=ExtResource("4_ejiun")]
+transform = Transform3D(15, 0, 0, 0, 15, 0, 0, 0, 15, -15, 7.5, 15)
+
+[node name="road_slant" parent="Road" instance=ExtResource("6_lp5ri")]
+transform = Transform3D(15, 0, 0, 0, 15, 0, 0, 0, 15, 15, 3.75, 15)
+
+[node name="Nissan GTR" parent="." instance=ExtResource("2_ip75f")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.40935, 0)

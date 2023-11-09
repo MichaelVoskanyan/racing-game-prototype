@@ -452,29 +452,33 @@ blend_shape_mode = 0
 shadow_mesh = SubResource("ArrayMesh_5vtlc")
 
 [node name="Nissan GTR" type="VehicleBody3D"]
+mass = 1150.0
 center_of_mass_mode = 1
-center_of_mass = Vector3(0, -0.233408, 1)
-gravity_scale = 4.0
+center_of_mass = Vector3(0, -0.351401, 1.06957)
+can_sleep = false
 script = ExtResource("1_jjh7c")
-MAX_BRAKE_FORCE = 5.0
+MAX_ENGINE_FORCE = 3000.0
 
 [node name="Plane" type="MeshInstance3D" parent="."]
 mesh = SubResource("ArrayMesh_wonax")
 skeleton = NodePath("")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+visible = false
 shape = SubResource("ConvexPolygonShape3D_dgxc8")
 
 [node name="FrontRight" type="VehicleWheel3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.019, -0.358, 1.944)
-use_as_traction = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.019, -0.25, 1.944)
 use_as_steering = true
 wheel_roll_influence = 0.0
-wheel_radius = 0.47
-wheel_rest_length = 0.1
-wheel_friction_slip = 1.4
-suspension_travel = 0.09
-suspension_stiffness = 170.0
+wheel_radius = 0.46
+wheel_rest_length = 0.2
+wheel_friction_slip = 15.0
+suspension_travel = 0.15
+suspension_stiffness = 175.0
+suspension_max_force = 2500.0
+damping_compression = 0.9
+damping_relaxation = 0.9
 
 [node name="Circle_001" type="MeshInstance3D" parent="FrontRight"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.019, 0.358, -1.944)
@@ -482,15 +486,17 @@ mesh = SubResource("ArrayMesh_wsvge")
 skeleton = NodePath("")
 
 [node name="FrontLeft" type="VehicleWheel3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.01916, -0.357628, 1.94391)
-use_as_traction = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.01916, -0.25, 1.94391)
 use_as_steering = true
 wheel_roll_influence = 0.0
-wheel_radius = 0.47
-wheel_rest_length = 0.1
-wheel_friction_slip = 1.4
-suspension_travel = 0.09
-suspension_stiffness = 170.0
+wheel_radius = 0.46
+wheel_rest_length = 0.2
+wheel_friction_slip = 15.0
+suspension_travel = 0.15
+suspension_stiffness = 175.0
+suspension_max_force = 2500.0
+damping_compression = 0.9
+damping_relaxation = 0.9
 
 [node name="Circle" type="MeshInstance3D" parent="FrontLeft"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.01916, 0.357628, -1.94391)
@@ -498,14 +504,17 @@ mesh = SubResource("ArrayMesh_aljjg")
 skeleton = NodePath("")
 
 [node name="BackRight" type="VehicleWheel3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.019, -0.358, -1.643)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.019, -0.25, -1.643)
 use_as_traction = true
 wheel_roll_influence = 0.0
-wheel_radius = 0.47
-wheel_rest_length = 0.1
-wheel_friction_slip = 1.4
-suspension_travel = 0.09
-suspension_stiffness = 170.0
+wheel_radius = 0.46
+wheel_rest_length = 0.2
+wheel_friction_slip = 15.0
+suspension_travel = 0.15
+suspension_stiffness = 175.0
+suspension_max_force = 3750.0
+damping_compression = 0.9
+damping_relaxation = 0.9
 
 [node name="Circle_002" type="MeshInstance3D" parent="BackRight"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.019, 0.358, 1.643)
@@ -513,14 +522,17 @@ mesh = SubResource("ArrayMesh_53eve")
 skeleton = NodePath("")
 
 [node name="BackLeft" type="VehicleWheel3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.01916, -0.357628, -1.64271)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.01916, -0.25, -1.64271)
 use_as_traction = true
 wheel_roll_influence = 0.0
-wheel_radius = 0.47
-wheel_rest_length = 0.1
-wheel_friction_slip = 1.4
-suspension_travel = 0.09
-suspension_stiffness = 170.0
+wheel_radius = 0.46
+wheel_rest_length = 0.2
+wheel_friction_slip = 15.0
+suspension_travel = 0.15
+suspension_stiffness = 175.0
+suspension_max_force = 3750.0
+damping_compression = 0.9
+damping_relaxation = 0.9
 
 [node name="Circle_003" type="MeshInstance3D" parent="BackLeft"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.01916, 0.357628, 1.64271)
@@ -528,10 +540,10 @@ mesh = SubResource("ArrayMesh_jrt0b")
 skeleton = NodePath("")
 
 [node name="CenterOfMass" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.233408, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.351401, 1.06957)
 
 [node name="CameraPivot" type="Node3D" parent="."]
 top_level = true
 
 [node name="Camera3D" type="Camera3D" parent="CameraPivot"]
-transform = Transform3D(-1, 1.77636e-15, -8.74228e-08, -2.26267e-08, 0.965926, 0.258819, 8.44439e-08, 0.258819, -0.965926, 0, 1.61999, -5.47966)
+transform = Transform3D(-1, 2.26267e-08, -8.44439e-08, 0, 0.965926, 0.258819, 8.74228e-08, 0.258819, -0.965926, 0, 1.62, -5)
