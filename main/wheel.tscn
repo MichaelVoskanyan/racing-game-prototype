@@ -1,0 +1,42 @@
+[gd_scene load_steps=2 format=3 uid="uid://dw2idb2c8eojt"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_wedla"]
+top_radius = 0.45
+bottom_radius = 0.45
+height = 0.25
+
+[node name="wheel" type="RayCast3D"]
+
+[node name="geometry" type="MeshInstance3D" parent="."]
+transform = Transform3D(-4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0, 1, 0, 0, 0)
+mesh = SubResource("CylinderMesh_wedla")
+
+[node name="compress" type="MeshInstance3D" parent="geometry"]
+
+[node name="longi" type="MeshInstance3D" parent="geometry"]
+
+[node name="lateral" type="MeshInstance3D" parent="geometry"]
+
+[node name="animation" type="Marker3D" parent="."]
+
+[node name="camber" type="Marker3D" parent="animation"]
+
+[node name="wheel" type="Marker3D" parent="animation/camber"]
+
+[node name="fixed" type="Marker3D" parent="animation"]
+
+[node name="fixed_steer" type="Marker3D" parent="animation"]
+
+[node name="fixed_steercamber" type="Marker3D" parent="animation"]
+
+[node name="fixed_camber" type="Marker3D" parent="animation"]
+
+[node name="fixed_axle" type="Marker3D" parent="animation"]
+
+[node name="velocity" type="Marker3D" parent="."]
+
+[node name="step" type="Marker3D" parent="velocity"]
+
+[node name="velocity2" type="Marker3D" parent="."]
+
+[node name="step" type="Marker3D" parent="velocity2"]

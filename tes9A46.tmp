@@ -90,5 +90,4 @@ transform = Transform3D(15, 0, 0, 0, 15, 0, 0, 0, 15, -15, 7.5, 15)
 transform = Transform3D(15, 0, 0, 0, 15, 0, 0, 0, 15, 15, 3.75, 15)
 
 [node name="Nissan GTR" parent="." instance=ExtResource("8_pnb4d")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.317, 1.34093, -2.024)
-Debug_Mode = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.317, 0.965, -2.024)
