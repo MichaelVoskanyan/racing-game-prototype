@@ -33,6 +33,9 @@ albedo_color = Color(0.203922, 0.203922, 0.203922, 1)
 
 [node name="Node3D" type="Node3D"]
 
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(-0.860484, 4.77825e-16, 0.509477, 3.48787e-16, 1, -3.48787e-16, -0.509477, -1.22427e-16, -0.860484, 3.26269, 3.15099, -8.92733)
+
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_m61g7")
 
@@ -90,5 +93,5 @@ transform = Transform3D(15, 0, 0, 0, 15, 0, 0, 0, 15, -15, 7.5, 15)
 transform = Transform3D(15, 0, 0, 0, 15, 0, 0, 0, 15, 15, 3.75, 15)
 
 [node name="Nissan GTR" parent="." instance=ExtResource("8_pnb4d")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.317, 1.34093, -2.024)
-Debug_Mode = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.317, 2.54291, -2.024)
+Weight = 2000.0

@@ -86,3 +86,7 @@ handbrake_mouse={
 "deadzone": 0.5,
 "events": []
 }
+
+[physics]
+
+3d/default_gravity=32.035

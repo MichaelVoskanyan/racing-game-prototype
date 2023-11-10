@@ -86,6 +86,7 @@ func fastest_wheel(array):
 	var obj
 	
 	for i in array:
+		
 		val = max(val, abs(i.absolute_wv))
 		
 		if val == abs(i.absolute_wv):

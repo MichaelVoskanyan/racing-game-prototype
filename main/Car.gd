@@ -294,7 +294,7 @@ func bullet_fix():
 		
 func _ready():
 	rpm = IdleRPM
-	for i in DrivingWheels:
+	for i in PoweredWheels:
 		var wh = get_node(str(i))
 		c_pws.append(wh)
 	
