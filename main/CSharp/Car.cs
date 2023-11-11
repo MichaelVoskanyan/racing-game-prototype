@@ -1,0 +1,461 @@
+using Godot;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection.Metadata.Ecma335;
+
+public partial class Car : RigidBody3D
+{
+	[Export]
+	public bool Debug_Mode = false;
+	[Export]
+	public bool Use_Global_Control_Settings = false;
+	[Export]
+	bool UseMouseSteering = false;
+	[Export]
+	bool UseAccelerometerSteering = false;
+	[Export]
+	float SteerSensitivity = 1.0f;
+	[Export]
+	float KeyboardSteerSpeed = 0.025f;
+	[Export]
+	float KeyboardReturnSpeed = 0.05f;
+	[Export]
+	float KeyboardCompensateSpeed = 0.1f;
+	[Export]
+	float SteerAmountDecay = 0.015f; // understeer help
+	[Export]
+	float SteeringAssistance = 1.0f;
+	[Export]
+	float SteeringAssistanceAngular = 0.12f;
+
+	[Export] bool LooseSteering = false; //simulate rack and pinion steering physics (EXPERIMENTAL)
+
+	[Export]
+	float OnThrottleRate = 0.2f;
+	[Export] float OffThrottleRate = 0.2f;
+
+	[Export] float OnBrakeRate = 0.05f;
+	[Export] float OffBrakeRate = 0.1f;
+
+	[Export] float OnHandbrakeRate = 0.2f;
+	[Export] float OffHandbrakeRate = 0.2f;
+
+	[Export] float OnClutchRate = 0.2f;
+	[Export] float OffClutchRate = 0.2f;
+
+	[Export] float MaxThrottle = 1.0f;
+	[Export] float MaxBrake = 1.0f;
+	[Export] float MaxHandbrake = 1.0f;
+	[Export] float MaxClutch = 1.0f;
+	[Export]
+	float[] GearAssistant = {
+		20, // Shift delay
+		2, // Assistance Level (0 - 2)
+		0.944087f, // Speed Influence (will be automatically set)
+		6000.0f, // Downshift RPM Iteration
+		6200.0f, // Upshift RPM
+		3000.0f, // Clutch-Out RPM
+		5 // throttle input allowed after shiting delay
+	};
+
+	// meta
+	[Export] bool Controlled = true;
+
+	// chassis
+	[Export] float Weight = 900.0f; // kg
+
+	// body
+	[Export] float LiftAngle = 0.1f;
+	[Export] float DragCoefficient = 0.25f;
+	[Export] float Downforce = 0.0f;
+
+	// Steering
+	[Export] float AckermannPoint = -3.8f;
+	[Export] float Steer_Radius = 13.0f;
+
+	// drivetrain
+	[Export] String[] PoweredWheels = { "fl", "fr" };
+
+	[Export]
+	float FinalDriveRatio = 4.250f;
+	[Export]
+	float[] GearRatios = { 3.250f, 1.894f, 1.259f, 0.937f, 0.771f };
+	[Export]
+	float ReverseRatio = 3.153f;
+
+	[Export]
+	float RatioMult = 9.5f;
+	[Export]
+	float StressFactor = 1.0f;
+	[Export]
+	float GearGap = 60.0f;
+	[Export] float DSWeight = 150.0f;
+	public enum TransmissionType { FullyManual, Automatic, CVT, SemiAuto };
+	[Export] TransmissionType transmissionType = 0;
+
+	[Export]
+	float[] AutoSettings = {
+		6500.0f, // shift rpm
+		300.0f, // downshift threshold
+		0.5f, // throttle efficiency threshold (range: 0-1) (auto/dct)
+		0.0f, // engagement rpm threshold
+		4000.0f // engagement rpm
+	};
+
+	[Export]
+	float[] CVTSettings = {
+		0.75f, // throttle efficiency threshold (range: 0 - 1)
+		0.025f, // acceleration rate (range: 0 - 1)
+		0.9f, // iteration 1 (higher = higher rpm)
+		500.0f, // iteration 2 (higher = better acceleration from standstill but unstable)
+		2.0f, // iteration 3 (higher = longer it takes to "lock" the rpm)
+		0.2f // iteration 4 (keep it over 0.1)
+	};
+
+	// Differentials
+	[Export] float Locking = 0.1f;
+	[Export] float CoastLocking = 0f;
+	[Export] float Preload = 0f;
+
+	[Export] float Centre_Locking = 0.5f;
+	[Export] float Centre_CoastLocking = 0.5f;
+	[Export] float Centre_Preload = 0f;
+
+	// Engine
+	[Export] float RevSpeed = 2.0f; // Flywheel lightness
+	[Export] float EngineFriction = 18000.0f;
+	[Export] float EngineDrag = 0.006f;
+	[Export] float ThrottleResponse = 0.5f;
+	[Export] float DeadRPM = 100.0f;
+
+	// ECU
+	[Export] float RPMLimit = 8000.0f;
+	[Export] float LimiterDelay = 4f;
+	[Export] float IdleRPM = 800f;
+	[Export] float ThrottleLimit = 0.0f;
+	[Export] float ThrottleIdle = 0.25f;
+	[Export] float VVTRPM = 4500.0f; // set this beyond the rev range to disable it, set it to - to use this vvt state permanently
+
+	// Torque normal state
+	[Export] float BuildUpTorque = 0.0035f;
+	[Export] float TorqueRise = 30.0f;
+	[Export] float RiseRPM = 1000.0f;
+	[Export] float OffsetTorque = 110.0f;
+	[Export] float FloatRate = 0.1f;
+	[Export] float DeclineRate = 1.5f;
+	[Export] float DeclineRPM = 3500.0f;
+	[Export] float DeclineSharpness = 1.0f;
+
+	// torque [Export] floatiable valve timing triggered
+	[Export] float VVT_BuildUpTorque = 0.0f;
+	[Export] float VVT_TorqueRise = 60.0f;
+	[Export] float VVT_RiseRPM = 1000.0f;
+	[Export] float VVT_OffsetTorque = 70.0f;
+	[Export] float VVT_FloatRate = 0.1f;
+	[Export] float VVT_DeclineRate = 2.0f;
+	[Export] float VVT_DeclineRPM = 5000.0f;
+	[Export] float VVT_DeclineSharpness = 1.0f;
+
+	// Clutch
+	[Export] float ClutchStable = 0.5f;
+	[Export] float GearRatioRatioThreshold = 200.0f;
+	[Export] float ThresholdStable = 0.01f;
+	[Export] float ClutchGrip = 176.125f;
+	[Export] float ClutchFloatReduction = 27.0f;
+	[Export] float ClutchWobble = 2.5f * 0f;
+	[Export] float ClutchElasticity = 0.2f * 0f;
+	[Export] float WobbleRate = 0.0f;
+
+
+	// forced inductions
+	[Export]
+	float MaxPSI = 9.0f; // Maximum air generated by any forced inductions
+	[Export] float EngineCompressionRatio = 8.0f; // Piston travel distance
+												  // turbo
+	[Export] bool TurboEnabled = false; // Enables turbo
+	[Export]
+	float TurboAmount = 1f; // Turbo power multiplication.
+	[Export] float TurboSize = 8.0f; // Higher = More turbo lag
+	[Export] float Compressor = 0.3f; // Higher = Allows more spooling on low RPM
+	[Export] float SpoolThreshold = 0.1f; // Range: 0 - 0.9999
+	[Export] float BlowoffRate = 0.14f;
+	[Export] float TurboEfficiency = 0.075f; // Range: 0 - 1
+	[Export] float TurboVacuum = 1.0f; // Performance deficiency upon turbo idle
+									   // supercharger
+	[Export] bool SuperchargerEnabled = false; // Enables supercharger
+	[Export] float SCRPMInfluence = 1.0f;
+	[Export] float BlowRate = 35.0f;
+	[Export] float SCThreshold = 6.0f;
+
+	float rpm = 0.0f;
+	float rpmspeed = 0.0f;
+	float resistancerpm = 0.0f;
+	float resistancedv = 0.0f;
+	int gear = 0;
+	float limdel = 0f;
+	int actualgear = 0;
+	float gearstress = 0.0f;
+	float throttle = 0.0f;
+	float cvtaccel = 0.0f;
+	float sassistdel = 0f;
+	float sassiststep = 0f;
+	bool clutchin = false;
+	bool gasrestricted = false;
+	bool revmatch = false;
+	float gaspedal = 0.0f;
+	float brakepedal = 0.0f;
+	float clutchpedal = 0.0f;
+	float clutchpedalreal = 0.0f;
+	float steer = 0.0f;
+	float steer2 = 0.0f;
+	float abspump = 0.0f;
+	float tcsweight = 0.0f;
+	bool tcsflash = false;
+	bool espflash = false;
+	float ratio = 0.0f;
+	bool vvt = false;
+	float brake_allowed = 0.0f;
+	float readout_torque = 0.0f;
+
+	float brakeline = 0.0f;
+	float handbrakepull = 0.0f;
+	float dsweight = 0.0f;
+	float dsweightrun = 0.0f;
+	float diffspeed = 0.0f;
+	float diffspeedun = 0.0f;
+	float locked = 0.0f;
+	float c_locked = 0.0f;
+	float wv_difference = 0.0f;
+	float rpmforce = 0.0f;
+	float whinepitch = 0.0f;
+	float turbopsi = 0.0f;
+	float scrpm = 0.0f;
+	float boosting = 0.0f;
+	float rpmcs = 0.0f;
+	float rpmcsm = 0.0f;
+	float currentstable = 0.0f;
+	float[] steering_geometry = { 0.0f, 0.0f };
+	float resistance = 0.0f;
+	float wob = 0.0f;
+	float ds_weight = 0.0f;
+	float steer_torque = 0.0f;
+	float steer_velocity = 0.0f;
+	float drivewheels_size = 1.0f;
+
+	float[] steering_angles = { };
+	float max_steering_angle = 0.0f;
+	float assistance_factor = 0.0f;
+
+
+
+	Vector3 pastvelocity = new Vector3(0, 0, 0);
+	Vector3 gforce = new Vector3(0, 0, 0);
+	float clock_mult = 1.0f;
+	float dist = 0.0f;
+	float stress = 0.0f;
+
+
+
+	bool su = false;
+	bool sd = false;
+	bool gas = false;
+	bool brake = false;
+	bool handbrake = false;
+	bool right = false;
+	bool left = false;
+	bool clutch = false;
+	RayCast3D[] c_pws = { };
+
+	Vector3 velocity = new Vector3(0, 0, 0);
+	Vector3 rvelocity = new Vector3(0, 0, 0);
+
+	float stalled = 0.0f;
+
+	public void bullet_fix()
+	{
+		Vector3 offset = GetNode<Marker3D>("DRAG_CENTRE").Position;
+		AckermannPoint -= offset.Z;
+
+		foreach (Node3D i in GetChildren())
+		{
+			i.Position -= offset;
+		}
+	}
+
+	public override void _Ready()
+	{
+		rpm = IdleRPM;
+		foreach (var i in PoweredWheels)
+		{
+			RayCast3D wh = GetNode<RayCast3D>(i.ToString());
+			c_pws.Append(wh);
+		}
+	}
+
+	public void controls()
+	{
+		float mouseposx = GetViewport().GetMousePosition().X / GetViewport().GetWindow().Size.X;
+
+		gas = Input.IsActionPressed("gas");
+		brake = Input.IsActionPressed("brake");
+		clutch = Input.IsActionPressed("clutch");
+		su = Input.IsActionJustPressed("shiftup");
+		sd = Input.IsActionJustPressed("shiftdown");
+		handbrake = Input.IsActionPressed("Handbrake");
+
+		left = Input.IsActionPressed("left");
+		right = Input.IsActionPressed("right");
+
+		if (left)
+			steer_velocity -= -0.01f;
+		else if (right)
+			steer_velocity += 0.01f;
+
+		if (Controlled)
+		{
+			if (GearAssistant[1] == 2)
+			{
+				if (gas && !gasrestricted && gear != -1 || brake && gear == -1 || revmatch)
+				{
+					gaspedal += OnThrottleRate / clock_mult;
+				}
+			}
+			else
+			{
+				if (GearAssistant[1] == 0)
+				{
+					gasrestricted = false;
+					clutchin = false;
+					revmatch = false;
+				}
+				if (gas && !gasrestricted || revmatch)
+				{
+					gaspedal += OnThrottleRate / clock_mult;
+				}
+				else
+				{
+					gaspedal -= OffThrottleRate / clock_mult;
+				}
+				if (brake)
+				{
+					brakepedal += OnBrakeRate / clock_mult;
+				}
+				else
+				{
+					brakepedal -= OffBrakeRate / clock_mult;
+				}
+			}
+
+			float siding = Math.Abs(velocity.X);
+
+			if (velocity.X > 0 && steer2 > 0 || velocity.X < 0 && steer2 < 0)
+				siding = 0;
+
+			float going = velocity.Z / (siding + 1f);
+			if (going < 0)
+				going = 0;
+
+			if (UseMouseSteering)
+			{
+				steer2 = (mouseposx - 0.5f) * 2.0f;
+				steer2 *= SteerSensitivity;
+				if (steer2 > 1.0f)
+					steer2 = 1.0f;
+				else if (steer2 < -1.0f)
+					steer2 = -1.0f;
+
+				float s = Math.Abs(steer2) + 0.5f;
+				if (s > 1)
+					s = 1f;
+
+				steer2 *= s;
+			}
+			else if (UseAccelerometerSteering)
+			{
+				steer2 = Input.GetAccelerometer().X / 10.0f;
+				steer2 *= SteerSensitivity;
+				if (steer2 > 1.0f)
+					steer2 = 1.0f;
+				else if (steer2 <= -1.0f)
+					steer2 = -1.0f;
+
+				float s = Math.Abs(steer2) + 0.5f;
+				if (s > 1)
+					s = 1;
+				steer2 *= s;
+			}
+			else
+			{
+				if (right)
+				{
+					if (steer2 > 0.0f)
+						steer2 += KeyboardSteerSpeed;
+					else
+						steer2 += KeyboardCompensateSpeed;
+				}
+				else if (left)
+				{
+					if (steer2 < 0)
+						steer2 -= KeyboardSteerSpeed;
+					else
+						steer2 -= KeyboardCompensateSpeed;
+				}
+				else
+				{
+					if (steer2 > KeyboardReturnSpeed)
+						steer2 -= KeyboardReturnSpeed;
+					else if (steer2 < -KeyboardReturnSpeed)
+						steer2 += KeyboardReturnSpeed;
+					else
+						steer2 = 0.0f;
+				}
+				if (steer2 > 1.0)
+					steer2 = 1.0f;
+				else if (steer2 < -1.0)
+					steer2 = -1.0f;
+			}
+			if (assistance_factor > 0.0)
+			{
+				float maxsteer = 1.0f / (going * (SteerAmountDecay / assistance_factor) + 1.0f);
+
+				var assist_commence = LinearVelocity.Length() / 10.0f;
+				if (assist_commence > 1.0f)
+					assist_commence = 1.0f;
+
+				steer = (steer2 * maxsteer) - (velocity.Normalized().X * assist_commence) * (SteeringAssistance * assistance_factor) + rvelocity.Y * (SteeringAssistanceAngular * assistance_factor);
+
+			}
+		}
+	}
+
+	public void limits()
+	{
+		if (gaspedal < 0.0)
+			gaspedal = 0.0f;
+		else if (gaspedal > MaxThrottle)
+			gaspedal = MaxThrottle;
+
+		if (brakepedal < 0f)
+			brakepedal = 0f;
+		else if (brakepedal > MaxBrake)
+			brakepedal = MaxBrake;
+
+		if (steer < -1f)
+			steer = -1f;
+		else if (steer > 1f)
+			steer = 1f;
+	}
+
+	public void transmission()
+	{
+		su = Input.IsActionJustPressed("shiftup");
+		sd = Input.IsActionJustPressed("shiftdown");
+
+		clutch = Input.IsActionPressed
+	}
+
+	public override void _Process(double delta)
+	{
+	}
+}

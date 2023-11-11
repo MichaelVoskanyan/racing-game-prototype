@@ -1,6 +1,5 @@
-[gd_scene load_steps=8 format=3 uid="uid://dw2idb2c8eojt"]
+[gd_scene load_steps=7 format=3 uid="uid://dw2idb2c8eojt"]
 
-[ext_resource type="Script" path="res://main/Wheel.gd" id="1_5ln07"]
 [ext_resource type="Script" path="res://main/forces.gd" id="1_nnsqb"]
 
 [sub_resource type="PointMesh" id="PointMesh_jia0y"]
@@ -17,7 +16,6 @@ bottom_radius = 0.35
 height = 0.185
 
 [node name="wheel" type="RayCast3D"]
-script = ExtResource("1_5ln07")
 
 [node name="geometry" type="MeshInstance3D" parent="."]
 transform = Transform3D(-4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0, 1, 0, 0, 0)

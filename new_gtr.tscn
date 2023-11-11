@@ -1,7 +1,8 @@
-[gd_scene load_steps=14 format=3 uid="uid://dah4abqjsnov7"]
+[gd_scene load_steps=15 format=3 uid="uid://dah4abqjsnov7"]
 
 [ext_resource type="PackedScene" uid="uid://dw2idb2c8eojt" path="res://main/wheel.tscn" id="1_jxxkm"]
 [ext_resource type="Script" path="res://main/Car.gd" id="1_t0tke"]
+[ext_resource type="Script" path="res://main/Wheel.gd" id="3_i4ork"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vnnmx"]
 resource_name = "chasis"
@@ -259,22 +260,22 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.351401, 1.06957)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 2.08165e-12, 1.944)
 target_position = Vector3(0, -0.71, 0)
 hit_from_inside = true
-script = null
+script = ExtResource("3_i4ork")
 
 [node name="fr" parent="." instance=ExtResource("1_jxxkm")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 2.08165e-12, 1.944)
 target_position = Vector3(0, -0.71, 0)
 hit_from_inside = true
-script = null
+script = ExtResource("3_i4ork")
 
 [node name="rl" parent="." instance=ExtResource("1_jxxkm")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 2.08165e-12, -1.643)
 target_position = Vector3(0, -0.71, 0)
 hit_from_inside = true
-script = null
+script = ExtResource("3_i4ork")
 
 [node name="rr" parent="." instance=ExtResource("1_jxxkm")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 2.08165e-12, -1.643)
 target_position = Vector3(0, -0.71, 0)
 hit_from_inside = true
-script = null
+script = ExtResource("3_i4ork")
