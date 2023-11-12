@@ -1,11 +1,12 @@
 extends RigidBody3D
 
-@export var Debug_Mode = false
+
+@export var Debug_Mode :bool = false
 
 # controls
-@export var Use_Global_Control_Settings = false
-@export var UseMouseSteering = false
-@export var UseAccelerometerSteering = false
+@export var Use_Global_Control_Settings :bool = false
+@export var UseMouseSteering :bool = false
+@export var UseAccelerometreSteering :bool = false
 @export var SteerSensitivity = 1.0
 @export var KeyboardSteerSpeed = 0.025
 @export var KeyboardReturnSpeed = 0.05
@@ -15,7 +16,7 @@ extends RigidBody3D
 @export var SteeringAssistance = 1.0
 @export var SteeringAssistanceAngular = 0.12
 
-@export var LooseSteering = false #simulate rack and pinion steering physics (EXPERIMENTAL)
+@export var LooseSteering :bool = false #simulate rack and pinion steering physics (EXPERIMENTAL)
 
 @export var OnThrottleRate = 0.2
 @export var OffThrottleRate = 0.2
@@ -56,16 +57,21 @@ extends RigidBody3D
 @export var Downforce = 0.0
 
 
+
+
+
+
+
+
 #steering
 @export var AckermannPoint = -3.8
 @export var Steer_Radius = 13.0
 
 #drivetrain
-@export var DrivingWheels : Array = ["fl", "fr"]
-@export var PoweredWheels := ["fl", "fr"]
+@export var Powered_Wheels :Array[String] = ["fl","fr"]
 
 @export var FinalDriveRatio = 4.250
-@export var GearRatios : Array = [ 3.250, 1.894, 1.259, 0.937, 0.771 ]
+@export var GearRatios :Array[float] = [ 3.250, 1.894, 1.259, 0.937, 0.771 ]
 @export var ReverseRatio = 3.153
 
 @export var RatioMult = 9.5
@@ -73,7 +79,6 @@ extends RigidBody3D
 @export var GearGap = 60.0
 @export var DSWeight = 150.0 # Leave this be, unless you know what you're doing.
 
-#@export(int, "Fully Manual", "Automatic", "Continuously Variable", "Semi-Auto") var TransmissionType = 0
 @export_enum("Fully Manual", "Automatic", "Continuously Variable", "Semi-Auto") var TransmissionType = 0
 
 @export var AutoSettings = [
@@ -286,18 +291,20 @@ var rvelocity = Vector3(0,0,0)
 var stalled = 0.0
 
 func bullet_fix():
-	var offset = $DRAG_CENTER.translation
+	var offset = $DRAG_CENTRE.position
 	AckermannPoint -= offset.z
 	
 	for i in get_children():
-		i.translation -= offset
-		
+		i.position -= offset
+
 func _ready():
+#	bullet_fix()
 	rpm = IdleRPM
-	for i in DrivingWheels:
+	for i in Powered_Wheels:
 		var wh = get_node(str(i))
 		c_pws.append(wh)
-	
+		
+
 func controls():
 	var mouseposx = 0.0
 	
@@ -310,7 +317,6 @@ func controls():
 		su = Input.is_action_just_pressed("shiftup_mouse")
 		sd = Input.is_action_just_pressed("shiftdown_mouse")
 		handbrake = Input.is_action_pressed("handbrake_mouse")
-	
 	else:
 		gas = Input.is_action_pressed("gas")
 		brake = Input.is_action_pressed("brake")
@@ -325,7 +331,7 @@ func controls():
 		steer_velocity -= 0.01
 	elif right:
 		steer_velocity += 0.01
-		
+	
 	if LooseSteering:
 		steer += steer_velocity
 
@@ -338,12 +344,14 @@ func controls():
 			
 			steer_velocity += steer*(i.directional_force.z*0.0005)*i.Caster
 
-			if i.translation.x>0:
+			if i.position.x>0:
 				steer_velocity += i.directional_force.z*0.0001
 			else:
 				steer_velocity -= i.directional_force.z*0.0001
 		
 			steer_velocity /= i.stress/(i.slip_percpre*(i.slip_percpre*100.0) +1.0) +1.0
+			
+	
 	if Controlled:
 		if GearAssistant[1] == 2:
 			if gas and not gasrestricted and not gear == -1 or brake and gear == -1 or revmatch:
@@ -399,7 +407,7 @@ func controls():
 					s = 1
 				
 				steer2 *= s
-			elif UseAccelerometerSteering:
+			elif UseAccelerometreSteering:
 				steer2 = Input.get_accelerometer().x/10.0
 				steer2 *= SteerSensitivity
 				if steer2>1.0:
@@ -886,32 +894,33 @@ func aero():
 	var drag = DragCoefficient
 	var df = Downforce
 	
-	#var veloc = global_transform.basis.orthonormalized().xform_inv(linear_velocity)
-	var veloc = linear_velocity * global_transform.basis.orthonormalized()
+#	var veloc = global_transform.basis.orthonormalized().xform_inv(linear_velocity)
+	var veloc = global_transform.basis.orthonormalized().transposed() * (linear_velocity)
 	
-	#var torq = global_transform.basis.orthonormalized().xform_inv(Vector3(1,0,0))
-	var torq = Vector3(1,0,0) * global_transform.basis.orthonormalized()
+#	var torq = global_transform.basis.orthonormalized().xform_inv(Vector3(1,0,0))
+	var torq = global_transform.basis.orthonormalized().transposed() * (Vector3(1,0,0))
 	
-	#apply_torque_impulse(global_transform.basis.orthonormalized().xform( Vector3(((-veloc.length()*0.3)*LiftAngle),0,0)  ) )
-	apply_torque_impulse(global_transform.basis.orthonormalized() * Vector3(((-veloc.length()*0.3)*LiftAngle), 0, 0) )
+#	apply_torque_impulse(global_transform.basis.orthonormalized().xform( Vector3(((-veloc.length()*0.3)*LiftAngle),0,0)  ) )
+	apply_torque_impulse(global_transform.basis.orthonormalized() * ( Vector3(((-veloc.length()*0.3)*LiftAngle),0,0)  ) )
 	
 	var vx = veloc.x*0.15
 	var vy = veloc.z*0.15
 	var vz = veloc.y*0.15
 	var vl = veloc.length()*0.15
-			
-	#var forc = global_transform.basis.orthonormalized().xform(Vector3(1,0,0))*(-vx*drag)
-	var forc = (global_transform.basis.orthonormalized() * Vector3(1,0,0)) * (-vx*drag)
-	#forc += global_transform.basis.orthonormalized().xform(Vector3(0,0,1))*(-vy*drag)
-	forc += (global_transform.basis.orthonormalized() * Vector3(0,0,1)) * (-vy*drag)
-	#forc += global_transform.basis.orthonormalized().xform(Vector3(0,1,0))*(-vl*df -vz*drag)
-	forc += (global_transform.basis.orthonormalized() * Vector3(0,1,0)) *(vl*df -vz*drag)
+	
+#	var forc = global_transform.basis.orthonormalized().xform(Vector3(1,0,0))*(-vx*drag)
+	var forc = global_transform.basis.orthonormalized() * (Vector3(1,0,0))*(-vx*drag)
+#	forc += global_transform.basis.orthonormalized().xform(Vector3(0,0,1))*(-vy*drag)
+	forc += global_transform.basis.orthonormalized() * (Vector3(0,0,1))*(-vy*drag)
+#	forc += global_transform.basis.orthonormalized().xform(Vector3(0,1,0))*(-vl*df -vz*drag)
+	forc += global_transform.basis.orthonormalized() * (Vector3(0,1,0))*(-vl*df -vz*drag)
 	
 	if has_node("DRAG_CENTRE"):
-		apply_impulse(global_transform.basis.orthonormalized() * ($DRAG_CENTRE.position), forc)
+#		apply_impulse(global_transform.basis.orthonormalized().xform($DRAG_CENTRE.position),forc)
+		apply_impulse(forc, global_transform.basis.orthonormalized() * ($DRAG_CENTRE.position))
 	else:
 		apply_central_impulse(forc)
-			
+		
 
 func _physics_process(delta):
 	
@@ -919,14 +928,14 @@ func _physics_process(delta):
 	if len(steering_angles)>0:
 		max_steering_angle = 0.0
 		for i in steering_angles:
-			max_steering_angle = max(max_steering_angle,i)
+			max_steering_angle = maxf(max_steering_angle,i)
 			
 		assistance_factor = 90.0/max_steering_angle
 	steering_angles = []
 	
 	if Use_Global_Control_Settings:
 		UseMouseSteering = VitaVehicleSimulation.UseMouseSteering
-		UseAccelerometerSteering = VitaVehicleSimulation.UseAccelerometerSteering
+		UseAccelerometreSteering = VitaVehicleSimulation.UseAccelerometreSteering
 		SteerSensitivity = VitaVehicleSimulation.SteerAmountDecay
 		KeyboardSteerSpeed = VitaVehicleSimulation.KeyboardSteerSpeed
 		KeyboardReturnSpeed = VitaVehicleSimulation.KeyboardReturnSpeed
@@ -945,8 +954,10 @@ func _physics_process(delta):
 		else:
 			Debug_Mode = true
 	
-	velocity = linear_velocity * global_transform.basis.orthonormalized()
-	rvelocity = angular_velocity * global_transform.basis.orthonormalized()
+#	velocity = global_transform.basis.orthonormalized().xform_inv(linear_velocity)
+	velocity = global_transform.basis.orthonormalized().transposed() * (linear_velocity)
+#	rvelocity = global_transform.basis.orthonormalized().xform_inv(angular_velocity)
+	rvelocity = global_transform.basis.orthonormalized().transposed() * (angular_velocity)
 
 	if not mass == Weight/10.0:
 		mass = Weight/10.0
@@ -955,7 +966,8 @@ func _physics_process(delta):
 	gforce = (linear_velocity - pastvelocity)*((0.30592/9.806)*60.0)
 	pastvelocity = linear_velocity
 	
-	gforce = gforce * global_transform.basis.orthonormalized()
+#	gforce = global_transform.basis.orthonormalized().xform_inv(gforce)
+	gforce = global_transform.basis.orthonormalized().transposed() * (gforce)
 	
 	controls()
 
@@ -1022,6 +1034,7 @@ func _physics_process(delta):
 			boosting = thr
 		else:
 			boosting -= (boosting - thr)*TurboEfficiency
+		
 		turbopsi += (boosting*rpm)/((TurboSize/Compressor)*60.9)
 
 		turbopsi -= turbopsi*BlowoffRate

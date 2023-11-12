@@ -1,13 +1,12 @@
-[gd_scene load_steps=15 format=3 uid="uid://dpsewvjm4jm6y"]
+[gd_scene load_steps=14 format=3 uid="uid://dpsewvjm4jm6y"]
 
 [ext_resource type="PackedScene" uid="uid://dxlwpoc8iay1b" path="res://Assets/Roads/road_curve.tscn" id="3_1dkm3"]
-[ext_resource type="PackedScene" uid="uid://c0f4h6g1kxw1d" path="res://Assets/Roads/road_end.tscn" id="3_sj0ky"]
 [ext_resource type="PackedScene" uid="uid://lmcqertjfa4m" path="res://Assets/Roads/road_straight.tscn" id="4_ejiun"]
 [ext_resource type="PackedScene" uid="uid://d1qb0lfhdqctr" path="res://Assets/Roads/road_bridge.tscn" id="4_tv5ue"]
 [ext_resource type="PackedScene" uid="uid://cu168aspphjfv" path="res://Assets/Roads/road_bend.tscn" id="5_mekgt"]
 [ext_resource type="PackedScene" uid="uid://ufq8vn6bvmq7" path="res://Assets/Roads/road_slant.tscn" id="6_lp5ri"]
 [ext_resource type="PackedScene" uid="uid://cyr6xu4pu2ubm" path="res://Assets/Roads/road_slant_curve.tscn" id="7_ieb8o"]
-[ext_resource type="PackedScene" uid="uid://dah4abqjsnov7" path="res://new_gtr.tscn" id="8_pnb4d"]
+[ext_resource type="PackedScene" uid="uid://cxn543r2hgc3k" path="res://nissan_gtr.tscn" id="8_m8si7"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_ies8j"]
 sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
@@ -56,9 +55,6 @@ surface_material_override/0 = SubResource("StandardMaterial3D_xfrl3")
 [node name="road_straight" parent="Road" instance=ExtResource("4_ejiun")]
 transform = Transform3D(-6.55671e-07, 0, 15, 0, 15, 0, -15, 0, -6.55671e-07, 0, 0, 0)
 
-[node name="road_end" parent="Road" instance=ExtResource("3_sj0ky")]
-transform = Transform3D(-6.55671e-07, 0, 15, 0, 15, 0, -15, 0, -6.55671e-07, 0, 0, -9)
-
 [node name="road_bridge" parent="Road" instance=ExtResource("4_tv5ue")]
 transform = Transform3D(-6.55671e-07, 0, -15, 0, 15, 0, 15, 0, -6.55671e-07, 0, 0, 15)
 
@@ -89,6 +85,10 @@ transform = Transform3D(15, 0, 0, 0, 15, 0, 0, 0, 15, -15, 7.5, 15)
 [node name="road_slant" parent="Road" instance=ExtResource("6_lp5ri")]
 transform = Transform3D(15, 0, 0, 0, 15, 0, 0, 0, 15, 15, 3.75, 15)
 
-[node name="Nissan GTR" parent="." instance=ExtResource("8_pnb4d")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.317, 1.34093, -2.024)
-Debug_Mode = true
+[node name="Nissan GTR" parent="." instance=ExtResource("8_m8si7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.4816, 1.25879, 0)
+
+[node name="Camera3D" type="Camera3D" parent="Nissan GTR"]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 2.09954, -0.290232, -5.69)
+
+[editable path="Road/road_straight"]
