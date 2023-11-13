@@ -122,6 +122,7 @@ data = PackedVector3Array(-0.5, 0.02, 0.71, -0.5, 0.01, 0.71, 0.5, 0.01, 0.71, 0
 [node name="tmpParent" type="Node3D" parent="."]
 
 [node name="road_side2" type="MeshInstance3D" parent="tmpParent"]
+transform = Transform3D(15, 0, 0, 0, 15, 0, 0, 0, 15, 0, 0, 0)
 mesh = SubResource("ArrayMesh_0wlev")
 skeleton = NodePath("")
 

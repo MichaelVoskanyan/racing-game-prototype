@@ -147,6 +147,7 @@ data = PackedVector3Array(-0.612, 0.01, 0, -0.5452, 0.01, 0.1, -0.5452, 0.02, 0.
 [node name="tmpParent" type="Node3D" parent="."]
 
 [node name="road_curveIntersection2" type="MeshInstance3D" parent="tmpParent"]
+transform = Transform3D(15, 0, 0, 0, 15, 0, 0, 0, 15, 0, 0, 0)
 mesh = SubResource("ArrayMesh_x13lg")
 skeleton = NodePath("")
 

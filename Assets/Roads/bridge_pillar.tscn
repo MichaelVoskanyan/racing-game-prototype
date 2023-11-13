@@ -71,7 +71,6 @@ transform = Transform3D(15, 0, 0, 0, 15, 0, 0, 0, 15, 0, 0, 0)
 [node name="tmpParent" type="Node3D" parent="."]
 
 [node name="bridge_pillar2" type="MeshInstance3D" parent="tmpParent"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.75)
 mesh = SubResource("ArrayMesh_qtfyu")
 skeleton = NodePath("")
 

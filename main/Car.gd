@@ -3,9 +3,11 @@ extends RigidBody3D
 
 @export var Debug_Mode :bool = false
 
+@onready var ffb = $ffb
 # controls
 @export var Use_Global_Control_Settings :bool = false
 @export var UseMouseSteering :bool = false
+@export var UseWheelSteering : bool = true
 @export var UseAccelerometreSteering :bool = false
 @export var SteerSensitivity = 1.0
 @export var KeyboardSteerSpeed = 0.025
@@ -326,31 +328,34 @@ func controls():
 	
 	left = Input.is_action_pressed("left")
 	right = Input.is_action_pressed("right")
-	
-	if left:
-		steer_velocity -= 0.01
-	elif right:
-		steer_velocity += 0.01
-	
-	if LooseSteering:
-		steer += steer_velocity
-
-		if abs(steer)>1.0:
-			steer_velocity *= -0.5
-
-		for i in [$fl,$fr]:
-			steer_velocity += (i.directional_force.x*0.00125)*i.Caster
-			steer_velocity -= (i.stress*0.0025)*(atan2(abs(i.wv),1.0)*i.angle)
-			
-			steer_velocity += steer*(i.directional_force.z*0.0005)*i.Caster
-
-			if i.position.x>0:
-				steer_velocity += i.directional_force.z*0.0001
-			else:
-				steer_velocity -= i.directional_force.z*0.0001
+	if not UseWheelSteering:
+		if left:
+			steer_velocity -= 0.01
+		elif right:
+			steer_velocity += 0.01
 		
-			steer_velocity /= i.stress/(i.slip_percpre*(i.slip_percpre*100.0) +1.0) +1.0
+		if LooseSteering:
+			steer += steer_velocity
+
+			if abs(steer)>1.0:
+				steer_velocity *= -0.5
+
+			for i in [$fl,$fr]:
+				steer_velocity += (i.directional_force.x*0.00125)*i.Caster
+				steer_velocity -= (i.stress*0.0025)*(atan2(abs(i.wv),1.0)*i.angle)
+				
+				steer_velocity += steer*(i.directional_force.z*0.0005)*i.Caster
+
+				if i.position.x>0:
+					steer_velocity += i.directional_force.z*0.0001
+				else:
+					steer_velocity -= i.directional_force.z*0.0001
 			
+				steer_velocity /= i.stress/(i.slip_percpre*(i.slip_percpre*100.0) +1.0) +1.0
+	else:
+		InputMap.action_set_deadzone('left', 0.01)
+		InputMap.action_set_deadzone('right', 0.01)
+		steer = Input.get_axis("left", "right") * SteerSensitivity
 	
 	if Controlled:
 		if GearAssistant[1] == 2:
@@ -420,7 +425,10 @@ func controls():
 					s = 1
 				
 				steer2 *= s
-
+			elif UseWheelSteering:
+				steer2 = Input.get_axis("left", "right") * SteerSensitivity
+				
+				
 			else:
 				if right:
 					if steer2>0:
@@ -954,6 +962,11 @@ func _physics_process(delta):
 		else:
 			Debug_Mode = true
 	
+	if Input.is_action_just_pressed("eStop"):
+		ffb.Stop()
+	if Input.is_action_just_pressed("ToggleFFB"):
+		ffb.TestFFB()
+	
 #	velocity = global_transform.basis.orthonormalized().xform_inv(linear_velocity)
 	velocity = global_transform.basis.orthonormalized().transposed() * (linear_velocity)
 #	rvelocity = global_transform.basis.orthonormalized().xform_inv(angular_velocity)
@@ -970,7 +983,7 @@ func _physics_process(delta):
 	gforce = global_transform.basis.orthonormalized().transposed() * (gforce)
 	
 	controls()
-
+	
 	ratio = 10.0
 
 	sassistdel -= 1
@@ -1023,7 +1036,7 @@ func _physics_process(delta):
 
 
 	var stab = 300.0
-
+	
 
 	var thr = 0.0
 

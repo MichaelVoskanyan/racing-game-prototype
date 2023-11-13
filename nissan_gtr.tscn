@@ -1,7 +1,8 @@
-[gd_scene load_steps=24 format=3 uid="uid://cxn543r2hgc3k"]
+[gd_scene load_steps=25 format=3 uid="uid://cxn543r2hgc3k"]
 
 [ext_resource type="Script" path="res://main/Car.gd" id="1_3v28e"]
 [ext_resource type="PackedScene" uid="uid://t204wc8ieopr" path="res://main/wheel.tscn" id="1_5qggu"]
+[ext_resource type="Script" path="res://main/forcefeedback/ForceFeedback.cs" id="3_nr4ay"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ci5yr"]
 resource_name = "chasis"
@@ -455,6 +456,7 @@ shadow_mesh = SubResource("ArrayMesh_801aa")
 [node name="Nissan GTR" type="RigidBody3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)
 script = ExtResource("1_3v28e")
+Weight = 1400.0
 
 [node name="Plane" type="MeshInstance3D" parent="."]
 mesh = SubResource("ArrayMesh_nh73l")
@@ -466,14 +468,13 @@ shape = SubResource("ConvexPolygonShape3D_sc07t")
 [node name="fl" parent="." instance=ExtResource("1_5qggu")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.0102, 0.35, 1.94141)
 target_position = Vector3(0, -1.865, 0)
-W_PowerBias = 0.5
-TyreSettings = {
-"Aspect Ratio": 45.0,
-"GripInfluence": 1.0,
-"Rim Size (in)": 17.0,
-"Width (mm)": 255.0
-}
-Camber = -1.545
+Differed_Wheel = "fr"
+SwayBarConnection = "fr"
+S_Stiffness = 55.0
+S_Damping = 5.7
+S_ReboundDamping = 7.4
+S_MaxCompression = 0.015
+A_Geometry1 = 1.0
 
 [node name="geometry" parent="fl" index="0"]
 transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0, 0)
@@ -486,14 +487,13 @@ skeleton = NodePath("")
 [node name="fr" parent="." instance=ExtResource("1_5qggu")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.01, 0.35, 1.941)
 target_position = Vector3(0, -1.865, 0)
-W_PowerBias = 0.5
-TyreSettings = {
-"Aspect Ratio": 45.0,
-"GripInfluence": 1.0,
-"Rim Size (in)": 17.0,
-"Width (mm)": 255.0
-}
-Camber = -1.545
+Differed_Wheel = "fl"
+SwayBarConnection = "fl"
+S_Stiffness = 55.0
+S_Damping = 5.7
+S_ReboundDamping = 7.4
+S_MaxCompression = 0.015
+A_Geometry1 = 1.0
 
 [node name="geometry" parent="fr" index="0"]
 transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0, 0)
@@ -506,14 +506,13 @@ skeleton = NodePath("")
 [node name="bl" parent="." instance=ExtResource("1_5qggu")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.0102, 0.35, -1.64393)
 target_position = Vector3(0, -1.865, 0)
-W_PowerBias = 0.5
-TyreSettings = {
-"Aspect Ratio": 45.0,
-"GripInfluence": 1.0,
-"Rim Size (in)": 17.0,
-"Width (mm)": 255.0
-}
-Camber = -1.545
+Steer = false
+Differed_Wheel = "br"
+SwayBarConnection = "br"
+S_Stiffness = 55.0
+S_Damping = 5.7
+S_ReboundDamping = 7.4
+S_MaxCompression = 0.015
 
 [node name="geometry" parent="bl" index="0"]
 transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0, 0)
@@ -526,14 +525,13 @@ skeleton = NodePath("")
 [node name="br" parent="." instance=ExtResource("1_5qggu")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.01, 0.35, -1.644)
 target_position = Vector3(0, -1.865, 0)
-W_PowerBias = 0.5
-TyreSettings = {
-"Aspect Ratio": 45.0,
-"GripInfluence": 1.0,
-"Rim Size (in)": 17.0,
-"Width (mm)": 255.0
-}
-Camber = -1.545
+Steer = false
+Differed_Wheel = "bl"
+SwayBarConnection = "bl"
+S_Stiffness = 55.0
+S_Damping = 5.7
+S_ReboundDamping = 7.4
+S_MaxCompression = 0.015
 
 [node name="geometry" parent="br" index="0"]
 transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0, 0)
@@ -542,6 +540,12 @@ transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0, 0)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.01, 0.362, 1.644)
 mesh = SubResource("ArrayMesh_ekfy5")
 skeleton = NodePath("")
+
+[node name="ffb" type="Node3D" parent="."]
+script = ExtResource("3_nr4ay")
+
+[node name="DRAG_CENTRE" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.373792, 1.23551)
 
 [editable path="fl"]
 [editable path="fr"]
