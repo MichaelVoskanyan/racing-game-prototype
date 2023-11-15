@@ -1,0 +1,3 @@
+[gd_scene format=3 uid="uid://cqbu87742262c"]
+
+[node name="fl" type="RayCast3D"]

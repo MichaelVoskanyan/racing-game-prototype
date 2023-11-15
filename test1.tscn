@@ -1,0 +1,22 @@
+[gd_scene load_steps=4 format=3 uid="uid://b2hbp4p07l07m"]
+
+[ext_resource type="PackedScene" uid="uid://c3va1gfemjc07" path="res://Assets/Cars/nissan_gtr2.tscn" id="1_hlesu"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_6i2wy"]
+size = Vector3(100, 0.1, 100)
+
+[sub_resource type="BoxMesh" id="BoxMesh_dsh3s"]
+size = Vector3(100, 0.1, 100)
+
+[node name="Node3D" type="Node3D"]
+
+[node name="StaticBody3D" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
+shape = SubResource("BoxShape3D_6i2wy")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D"]
+mesh = SubResource("BoxMesh_dsh3s")
+
+[node name="Nissan GTR" parent="." instance=ExtResource("1_hlesu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4454, 0)
