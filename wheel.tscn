@@ -1,3 +1,6 @@
-[gd_scene format=3 uid="uid://cqbu87742262c"]
+[gd_scene load_steps=2 format=3 uid="uid://cqbu87742262c"]
+
+[ext_resource type="Script" path="res://main/Wheel.cs" id="1_dousi"]
 
 [node name="fl" type="RayCast3D"]
+script = ExtResource("1_dousi")

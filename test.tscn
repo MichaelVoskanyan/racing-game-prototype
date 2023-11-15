@@ -6,7 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://cu168aspphjfv" path="res://Assets/Roads/road_bend.tscn" id="5_mekgt"]
 [ext_resource type="PackedScene" uid="uid://ufq8vn6bvmq7" path="res://Assets/Roads/road_slant.tscn" id="6_lp5ri"]
 [ext_resource type="PackedScene" uid="uid://cyr6xu4pu2ubm" path="res://Assets/Roads/road_slant_curve.tscn" id="7_ieb8o"]
-[ext_resource type="PackedScene" uid="uid://cxn543r2hgc3k" path="res://nissan_gtr.tscn" id="8_m8si7"]
+[ext_resource type="PackedScene" uid="uid://c3va1gfemjc07" path="res://Assets/Cars/nissan_gtr2.tscn" id="8_m8si7"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_ies8j"]
 sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
@@ -86,9 +86,8 @@ transform = Transform3D(15, 0, 0, 0, 15, 0, 0, 0, 15, -15, 7.5, 15)
 transform = Transform3D(15, 0, 0, 0, 15, 0, 0, 0, 15, 15, 3.75, 15)
 
 [node name="Nissan GTR" parent="." instance=ExtResource("8_m8si7")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.4816, 1.25879, 0)
 
 [node name="Camera3D" type="Camera3D" parent="Nissan GTR"]
-transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 2.09954, -0.290232, -5.69)
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0.894823, -5.39304)
 
 [editable path="Road/road_straight"]

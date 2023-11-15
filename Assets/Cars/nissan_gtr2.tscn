@@ -471,7 +471,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.01084, 0.379064, -1.94127)
 mesh = SubResource("ArrayMesh_x4rhk")
 skeleton = NodePath("")
 
-[node name="fr" type="RayCast3D" parent="."]
+[node name="fr" parent="." instance=ExtResource("2_lvsrj")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.011, -0.379, 1.941)
 
 [node name="Circle_001" type="MeshInstance3D" parent="fr"]
@@ -479,19 +479,19 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.011, 0.379, -1.941)
 mesh = SubResource("ArrayMesh_qlw7o")
 skeleton = NodePath("")
 
-[node name="bl" type="RayCast3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.011, -0.356, -1.643)
+[node name="br" parent="." instance=ExtResource("2_lvsrj")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.011, -0.356, -1.643)
 
-[node name="Circle_002" type="MeshInstance3D" parent="bl"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.011, 0.356, 1.643)
+[node name="Circle_002" type="MeshInstance3D" parent="br"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.011, 0.356, 1.643)
 mesh = SubResource("ArrayMesh_ekfy5")
 skeleton = NodePath("")
 
-[node name="br" type="RayCast3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.01084, -0.356091, -1.64326)
+[node name="bl" parent="." instance=ExtResource("2_lvsrj")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.011, -0.356, -1.643)
 
-[node name="Circle_003" type="MeshInstance3D" parent="br"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.01084, 0.356091, 1.64326)
+[node name="Circle_003" type="MeshInstance3D" parent="bl"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.011, 0.356, 1.643)
 mesh = SubResource("ArrayMesh_r12s5")
 skeleton = NodePath("")
 
@@ -499,5 +499,6 @@ skeleton = NodePath("")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.356878, 0.891789)
 target_position = Vector3(0, -1.5, 0)
 
-[node name="drivetrain" type="Node3D" parent="."]
+[node name="drivetrain" type="Node3D" parent="." node_paths=PackedStringArray("driving_wheels")]
 script = ExtResource("3_tmk0s")
+driving_wheels = []
