@@ -14,7 +14,7 @@ public partial class Car : RigidBody3D
 {
 	[ExportCategory("References")]
 	[Export] public Drivetrain drivetrain;
-	[Export] public Array wheels = new Array();
+	[Export] public string[] wheels = { "fr", "fl", "br", "bl" };
 	[Export] public Controller controls;
 
 	[Export] public Label label;
@@ -69,16 +69,6 @@ public partial class Car : RigidBody3D
 		// label = GetNode<Label>("Label");
 		drivetrain = GetNode<Drivetrain>("drivetrain");
 
-
-		foreach (var i in GetChildren())
-		{
-			GD.Print(i.GetClass());
-		}
-		GD.Print(wheels.Count());
-		foreach (var i in wheels)
-		{
-			GD.Print("Wheel: " + i);
-		}
 	}
 
 	public override void _PhysicsProcess(double delta)

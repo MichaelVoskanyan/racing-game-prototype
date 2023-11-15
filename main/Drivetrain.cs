@@ -4,16 +4,20 @@ using Dictionary = Godot.Collections.Dictionary;
 using System;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Security.AccessControl;
 
 public partial class Drivetrain : Node
 {
+	#region References
+	public Controller controller;
+	#endregion
 	#region Engine
 	[ExportCategory("Engine Configuration")]
 	[Export] public float torque_max;
 	[Export] public float rpm_max;
 	[Export] public string power_band_file_path = "main/power.json";
-	public Dictionary power_band = new Dictionary();
-	[Export] public Curve powerband = new Curve();
+	[Export] public float rpm_climb_rate = 1000f;   // revs per second
+	[Export] public Dictionary powerband = new Dictionary();
 	public float rpm_current = 1505f;
 	#endregion
 
@@ -23,6 +27,7 @@ public partial class Drivetrain : Node
 	[Export] public float reverse_ratio;
 	[Export] public float diff_ratio;
 	public int gear_current;
+	public float clutch = 1f;
 	#endregion
 
 	#region Brakes
@@ -40,21 +45,19 @@ public partial class Drivetrain : Node
 	public void ImportEngineTorqueCurve()
 	{
 		var jsonString = System.IO.File.ReadAllText(power_band_file_path);
-		power_band = (Dictionary)Json.ParseString(jsonString);
-		foreach (var i in power_band)
+		powerband = (Dictionary)Json.ParseString(jsonString);
+		foreach (var i in powerband)
 		{
 			GD.Print("" + (float)i.Key + ' ' + i.Value);
-			powerband.AddPoint(new Vector2((float)i.Key / (float)power_band.Last().Key, (float)i.Value) / (float)power_band.Last().Value, 0, 0);
-			GD.Print(powerband.ToString());
 		}
-		System.IO.File.WriteAllText(power_band_file_path, Json.Stringify(powerband));
 	}
 
 
 	public float EngineTorque(float throttle)
 	{
-		Array k = (Array)power_band.Keys;
-		Array v = (Array)power_band.Values;
+		Array k = (Array)powerband.Keys;
+		Array v = (Array)powerband.Values;
+
 
 		for (int i = 0; i < k.Count(); i++)
 		{
@@ -77,26 +80,26 @@ public partial class Drivetrain : Node
 		return 0.0f;
 	}
 
-	public float EngineRPM(float v)
+	public float EngineRPM(float v, double delta)
 	{
-		if (v > 0)
+		if (clutch == 1 && v == 0)
 		{
-			var rotation_rate = v / (driving_wheels[0].TireDiameter() * Mathf.Pi);
-			return rotation_rate * (float)gear_ratios[gear_current] * diff_ratio * (60 / (2 * Mathf.Pi));
+			return 0f;
 		}
-		else if (v < 0)
+		else if (Mathf.Sign(v) == 1 && clutch == 1)
 		{
-			var rotation_rate = v / (driving_wheels[0].TireDiameter() * Mathf.Pi);
-			return rotation_rate * reverse_ratio * diff_ratio * (60 / (2 * Mathf.Pi));
+			return v * (float)gear_ratios[gear_current] * diff_ratio * (60 / (2 * Mathf.Pi));
+		}
+		else if (Mathf.Sign(v) == -1 && clutch == 1)
+		{
+			return v * reverse_ratio * diff_ratio * (60 / (2 * Mathf.Pi));
 		}
 		else
 		{
-			// check if clutch or brakes
-			// if manual and clutch engaged, rpm = 0
-			// if automatic and no brakes, rpm stays same and force applied (externally)
-			// if automatic and brakes, rpm stays same
+			float revRate = controller.throttle > 0f ? rpm_climb_rate * controller.throttle * (float)delta :
+					-rpm_climb_rate * 0.5f * (float)delta;
+			return rpm_current += revRate;
 		}
-		return 0f;
 	}
 
 	public float BrakeForce(float brake)

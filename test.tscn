@@ -86,8 +86,9 @@ transform = Transform3D(15, 0, 0, 0, 15, 0, 0, 0, 15, -15, 7.5, 15)
 transform = Transform3D(15, 0, 0, 0, 15, 0, 0, 0, 15, 15, 3.75, 15)
 
 [node name="Nissan GTR" parent="." instance=ExtResource("8_m8si7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.12016, 0)
 
 [node name="Camera3D" type="Camera3D" parent="Nissan GTR"]
-transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0.894823, -5.39304)
+transform = Transform3D(-0.273657, 0, -0.961827, 0, 1, 0, 0.961827, 0, -0.273657, -3.94633, 0.894823, 0.136367)
 
 [editable path="Road/road_straight"]

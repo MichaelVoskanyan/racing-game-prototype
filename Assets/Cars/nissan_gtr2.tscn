@@ -465,6 +465,11 @@ shape = SubResource("ConvexPolygonShape3D_8wunw")
 
 [node name="fl" parent="." instance=ExtResource("2_lvsrj")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.01084, -0.379064, 1.94127)
+spring_rate = 3.0
+ride_height = 0.2
+max_travel = 0.035
+bump = 0.5
+rebound = 0.3
 
 [node name="Circle" type="MeshInstance3D" parent="fl"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.01084, 0.379064, -1.94127)
@@ -473,6 +478,11 @@ skeleton = NodePath("")
 
 [node name="fr" parent="." instance=ExtResource("2_lvsrj")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.011, -0.379, 1.941)
+spring_rate = 3.0
+ride_height = 0.2
+max_travel = 0.035
+bump = 0.5
+rebound = 0.3
 
 [node name="Circle_001" type="MeshInstance3D" parent="fr"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.011, 0.379, -1.941)
@@ -481,6 +491,11 @@ skeleton = NodePath("")
 
 [node name="br" parent="." instance=ExtResource("2_lvsrj")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.011, -0.356, -1.643)
+spring_rate = 3.0
+ride_height = 0.2
+max_travel = 0.035
+bump = 0.5
+rebound = 0.3
 
 [node name="Circle_002" type="MeshInstance3D" parent="br"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.011, 0.356, 1.643)
@@ -489,6 +504,11 @@ skeleton = NodePath("")
 
 [node name="bl" parent="." instance=ExtResource("2_lvsrj")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.011, -0.356, -1.643)
+spring_rate = 3.0
+ride_height = 0.2
+max_travel = 0.035
+bump = 0.5
+rebound = 0.3
 
 [node name="Circle_003" type="MeshInstance3D" parent="bl"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.011, 0.356, 1.643)
