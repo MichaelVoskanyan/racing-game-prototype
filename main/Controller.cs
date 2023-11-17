@@ -50,6 +50,7 @@ public partial class Controller : Node
 		throttle = (throttle - ThrottleDeadzoneIn) / ((1 - ThrottleDeadzoneOut) - ThrottleDeadzoneIn);
 		brake = (brake - ThrottleDeadzoneIn) / ((1 - BrakeDeadzoneOut) - BrakeDeadzoneIn);
 
+		// Engine.TimeScale = 0.1f;
 	}
 
 

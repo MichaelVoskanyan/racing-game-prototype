@@ -1,8 +1,9 @@
-[gd_scene load_steps=25 format=3 uid="uid://c3va1gfemjc07"]
+[gd_scene load_steps=26 format=3 uid="uid://c3va1gfemjc07"]
 
 [ext_resource type="Script" path="res://main/Car.cs" id="1_fas7b"]
 [ext_resource type="PackedScene" uid="uid://cqbu87742262c" path="res://wheel.tscn" id="2_lvsrj"]
 [ext_resource type="Script" path="res://main/Drivetrain.cs" id="3_tmk0s"]
+[ext_resource type="Script" path="res://main/Controller.cs" id="4_sxvlp"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ci5yr"]
 resource_name = "chasis"
@@ -454,7 +455,12 @@ blend_shape_mode = 0
 shadow_mesh = SubResource("ArrayMesh_pncyk")
 
 [node name="Nissan GTR" type="RigidBody3D"]
+center_of_mass_mode = 1
+center_of_mass = Vector3(0, -0.356878, 0.891789)
 script = ExtResource("1_fas7b")
+weight = 1.0
+drag_coefficient = 0.3
+frontal_area = 20.0
 
 [node name="Plane" type="MeshInstance3D" parent="."]
 mesh = SubResource("ArrayMesh_nh73l")
@@ -491,6 +497,7 @@ skeleton = NodePath("")
 
 [node name="br" parent="." instance=ExtResource("2_lvsrj")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.011, -0.356, -1.643)
+Steering = false
 spring_rate = 3.0
 ride_height = 0.2
 max_travel = 0.035
@@ -504,6 +511,7 @@ skeleton = NodePath("")
 
 [node name="bl" parent="." instance=ExtResource("2_lvsrj")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.011, -0.356, -1.643)
+Steering = false
 spring_rate = 3.0
 ride_height = 0.2
 max_travel = 0.035
@@ -519,6 +527,12 @@ skeleton = NodePath("")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.356878, 0.891789)
 target_position = Vector3(0, -1.5, 0)
 
-[node name="drivetrain" type="Node3D" parent="." node_paths=PackedStringArray("driving_wheels")]
+[node name="drivetrain" type="Node3D" parent="."]
 script = ExtResource("3_tmk0s")
-driving_wheels = []
+gear_ratios = [3.827, 2.36, 1.685, 1.312, 1.0, 0.793]
+reverse_ratio = -3.28
+diff_ratio = 3.545
+driving_wheels = PackedStringArray("bl", "br")
+
+[node name="controller" type="Node3D" parent="."]
+script = ExtResource("4_sxvlp")

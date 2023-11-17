@@ -1,10 +1,10 @@
 using Godot;
 using Array = Godot.Collections.Array;
 using System;
-using System.Linq;
+using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.VisualBasic;
-using System.Collections.Generic;
+using System.Linq;
 
 /// <summary>
 /// Class contains method definitions for physics calculations and their application to the 
@@ -14,10 +14,12 @@ public partial class Car : RigidBody3D
 {
 	[ExportCategory("References")]
 	[Export] public Drivetrain drivetrain;
-	[Export] public string[] wheels = { "fr", "fl", "br", "bl" };
-	[Export] public Controller controls;
+	[Export] public string[] driving_wheels = { "fl", "fr", "bl", "br" };
+	[Export] public string[] steering_wheels = { "fl", "fr" };
+	List<Wheel> d_wheels = new List<Wheel>();
+	List<Wheel> s_wheels = new List<Wheel>();
+	[Export] public Controller controller;
 
-	[Export] public Label label;
 	[ExportCategory("Car Configuration")]
 	[Export] public float weight; // kilos
 	[Export] public float drag_coefficient;
@@ -38,26 +40,33 @@ public partial class Car : RigidBody3D
 
 	Vector3 direction = new Vector3(0, 0, 0);
 
-	// Determines user steering input and resulting steering force
-	void Steering()
+	public void MoveTest(double delta)
 	{
-
+		LinearVelocity += direction * 5f * (float)delta;
 	}
 
-	/// <summary>
-	/// Calls drivetrain engine force and applies to rigidbody
-	/// </summary>
-	void EngineForce()
+	public bool DrivingWheelsInit()
 	{
-
+		foreach (string s in driving_wheels)
+		{
+			d_wheels.Add(GetNode<Wheel>(s));
+		}
+		if (d_wheels.Count() == driving_wheels.Count())
+			return true;
+		else
+			return false;
 	}
 
-	/// <summary>
-	/// Calls drivetrain brake force and applies to rigidbody
-	/// </summary>
-	void BrakeForce()
+	public bool SteeringWheelsInit()
 	{
-
+		foreach (string s in steering_wheels)
+		{
+			s_wheels.Add(GetNode<Wheel>(s));
+		}
+		if (s_wheels.Count() == steering_wheels.Count())
+			return true;
+		else
+			return false;
 	}
 
 	/// <summary>
@@ -68,13 +77,24 @@ public partial class Car : RigidBody3D
 		base._Ready();
 		// label = GetNode<Label>("Label");
 		drivetrain = GetNode<Drivetrain>("drivetrain");
+		GD.Print(drivetrain);
+		controller = GetNode<Controller>("controller");
+		GD.Print(controller);
+		if (!SteeringWheelsInit())
+			GD.PrintErr("Error initializing steering wheels!");
+		if (!DrivingWheelsInit())
+			GD.PrintErr("Error Initializing driving wheels!");
+
 
 	}
 
 	public override void _PhysicsProcess(double delta)
 	{
 		base._PhysicsProcess(delta);
-
-		// label.Text = "RPM: " + (float)drivetrain.rpm_current + "  Gear: " + (int)drivetrain.gear_current;
+		direction = GlobalTransform.Basis.Z;
+		if (controller.throttle > 0)
+		{
+			MoveTest(delta);
+		}
 	}
 }

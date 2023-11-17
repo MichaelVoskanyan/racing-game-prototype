@@ -5,16 +5,19 @@ using System;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.AccessControl;
+using System.Collections.Generic;
 
 public partial class Drivetrain : Node
 {
 	#region References
 	public Controller controller;
 	#endregion
+
 	#region Engine
 	[ExportCategory("Engine Configuration")]
 	[Export] public float torque_max;
 	[Export] public float rpm_max;
+	[Export] public float rpm_idle;
 	[Export] public string power_band_file_path = "main/power.json";
 	[Export] public float rpm_climb_rate = 1000f;   // revs per second
 	[Export] public Dictionary powerband = new Dictionary();
@@ -26,6 +29,7 @@ public partial class Drivetrain : Node
 	[Export] public Array gear_ratios = new Array();
 	[Export] public float reverse_ratio;
 	[Export] public float diff_ratio;
+	[Export] public float trans_efficiency = 0.8f;
 	public int gear_current;
 	public float clutch = 1f;
 	#endregion
@@ -38,9 +42,24 @@ public partial class Drivetrain : Node
 
 
 
-	[Export] Wheel[] driving_wheels;
+	[Export] string[] driving_wheels;
+	List<Wheel> d_wheels = new List<Wheel>();
 
-
+	public float SelectedRatio()
+	{
+		if (gear_current >= 0 && gear_current < gear_ratios.Count())
+		{
+			return (float)gear_ratios[gear_current];
+		}
+		else if (gear_current == -1)
+		{
+			return reverse_ratio;
+		}
+		else
+		{
+			return 0;
+		}
+	}
 
 	public void ImportEngineTorqueCurve()
 	{
@@ -80,25 +99,39 @@ public partial class Drivetrain : Node
 		return 0.0f;
 	}
 
-	public float EngineRPM(float v, double delta)
+	public void EngineRPM(float v, double delta)
 	{
-		if (clutch == 1 && v == 0)
+		// if (clutch == 1 && v == 0)
+		// {
+		// 	return 0f;
+		// }
+		// else if (Mathf.Sign(v) == 1 && clutch == 1)
+		// {
+		// 	return v * (float)gear_ratios[gear_current] * diff_ratio * (60 / (2 * Mathf.Pi));
+		// }
+		// else if (Mathf.Sign(v) == -1 && clutch == 1)
+		// {
+		// 	return v * reverse_ratio * diff_ratio * (60 / (2 * Mathf.Pi));
+		// }
+		// else
+		// {
+		// 	float revRate = controller.throttle > 0f ? rpm_climb_rate * controller.throttle * (float)delta :
+		// 			-rpm_climb_rate * 0.5f * (float)delta;
+		// 	return rpm_current += revRate;
+		// }
+		if (clutch == 1)
 		{
-			return 0f;
+			float currgear = gear_current >= 0 ? (float)gear_ratios[gear_current] : reverse_ratio;
+
+			rpm_current = v * currgear * diff_ratio * d_wheels[0].TireDiameter() * (60 / (2 * (Mathf.Pi)));
 		}
-		else if (Mathf.Sign(v) == 1 && clutch == 1)
+		else if (clutch > 0 && clutch < 1)
 		{
-			return v * (float)gear_ratios[gear_current] * diff_ratio * (60 / (2 * Mathf.Pi));
+			rpm_current += controller.throttle > 0 ? rpm_climb_rate * controller.throttle * (float)delta : -0.5f * rpm_climb_rate;
 		}
-		else if (Mathf.Sign(v) == -1 && clutch == 1)
+		else if (clutch == 0)
 		{
-			return v * reverse_ratio * diff_ratio * (60 / (2 * Mathf.Pi));
-		}
-		else
-		{
-			float revRate = controller.throttle > 0f ? rpm_climb_rate * controller.throttle * (float)delta :
-					-rpm_climb_rate * 0.5f * (float)delta;
-			return rpm_current += revRate;
+			rpm_current = rpm_idle;
 		}
 	}
 
@@ -107,17 +140,29 @@ public partial class Drivetrain : Node
 		return brake_force_max * brake;
 	}
 
+	public bool DrivingWheelsInit()
+	{
+		foreach (string i in driving_wheels)
+		{
+			d_wheels.Add(GetParent().GetNode<Wheel>(i));
+		}
+		if (driving_wheels.Count() == d_wheels.Count())
+			return true;
+		else
+			return false;
+	}
+
 	public override void _Ready()
 	{
 		base._Ready();
 		ImportEngineTorqueCurve();
-		GD.Print("Current torque: " + EngineTorque(0.5f));
+		if (!DrivingWheelsInit())
+			GD.PrintErr("Wheels not initialized!");
 	}
 
 	public override void _Process(double delta)
 	{
 		base._Process(delta);
-
 	}
 
 }
