@@ -123,7 +123,7 @@ public partial class Drivetrain : Node
 		{
 			float currgear = gear_current >= 0 ? (float)gear_ratios[gear_current] : reverse_ratio;
 
-			rpm_current = v * currgear * diff_ratio * d_wheels[0].TireDiameter() * (60 / (2 * (Mathf.Pi)));
+			rpm_current = v * currgear * diff_ratio * d_wheels[0].wheelRadius * 2 * (60 / (2 * (Mathf.Pi)));
 		}
 		else if (clutch > 0 && clutch < 1)
 		{

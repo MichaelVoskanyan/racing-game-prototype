@@ -1,7 +1,7 @@
 using Godot;
 using Dictionary = Godot.Collections.Dictionary;
 using System;
-using System.Runtime.CompilerServices;
+using System.Diagnostics;
 
 public partial class Wheel : RayCast3D
 {
@@ -9,6 +9,7 @@ public partial class Wheel : RayCast3D
 
 	/* References */
 	public Car car;
+	public RigidBody3D carBody;
 	public Drivetrain dr;
 
 	#region TireData
@@ -18,6 +19,7 @@ public partial class Wheel : RayCast3D
 	[Export] public float tire_aspect = 45;
 	[Export] public float rim = 17;
 	[Export] public TireType tire_type = TireType.street;
+	public float wheelRadius;
 	#endregion
 
 	#region WheelBehavior
@@ -30,11 +32,31 @@ public partial class Wheel : RayCast3D
 	[ExportCategory("Suspension Configuration")]
 	[Export] Wheel anti_roll_bar_connection;
 	[Export] float anti_roll_rate;
-	[Export] float spring_rate;
-	[Export] float ride_height;  // Height above the wheel that the car will rest
-	[Export] float max_travel;   // maximum the wheel can move in either direction
+	[Export] float springStiffness;
+	[Export] float rest;  // distance below the car that the wheel will rest
 	[Export] float bump;
 	[Export] float rebound;
+
+	// youtube tutorial 
+	// Length of spring = distance between raycast origin and whelehit minus the wheel radius
+	// raycast full length (maxlength + wheelRadius)
+	// maxlength = restlength + springtravel
+	[ExportCategory("Suspension Unity")]
+	[Export] public float restLength;
+	[Export] public float springTravel;
+	[Export] public float damperStiffness;
+
+	private float minLength;
+	private float maxLength;
+	private float lastLength;
+	private float springLength;
+	public float springForce;
+	private float springVelocity;
+	private float damperForce;
+	
+	// Applied to car body
+	public Vector3 suspensionForce;	
+
 	#endregion
 
 	#region DiffConfig
@@ -48,38 +70,45 @@ public partial class Wheel : RayCast3D
 	float longi_slip_ratio;
 	float wheel_speed;
 
-	/* Wheel positioning */
-	Vector3 lastPosition = new Vector3(0, 0, 0);
-	Vector3 nextPosition = new Vector3(0, 0, 0);
+    public override void _Ready()
+    {
+        base._Ready();
+		minLength = restLength - springTravel;
+		maxLength = restLength + springTravel;
+		car = (Car)GetParent();
+		carBody = GetParent<RigidBody3D>();
+		wheelRadius = WheelRadius();
+    }
 
-	public void CalcLongiSlip()
-	{
-		// delta = ( Wheel angular velocity * Radius (meters) - Vel Long) / (|Vel Long|)
+    public void SuspensionPosition(float delta) {
+		TargetPosition = Vector3.Down * (maxLength + wheelRadius);
+		bool hit = IsColliding();
+		if (hit) {
+			lastLength = springLength;
+			springLength = Position.DistanceTo(GetCollisionPoint()) - wheelRadius;
+			springLength = Mathf.Clamp(springLength, minLength, maxLength);
+			springVelocity = (lastLength - springLength) / delta;
+			springForce = springStiffness * (restLength - springLength);
+			damperForce = damperStiffness * springVelocity;
 
+			suspensionForce = (springForce + damperForce) * GetCollisionNormal();
+			// GD.Print("Susp force: " + suspensionForce.ToString());
+			carBody.ApplyForce(suspensionForce, GetCollisionPoint());
+		} else {
+			suspensionForce = Vector3.Zero;
+		}
 	}
 
-	public void CalcWheelSpeed()
+	public float WheelRadius()
 	{
-
+		float rad = tire_width * (tire_aspect / 100f);
+		return (rad + (25.4f * rim))/1000f;
 	}
 
-	public float TireDiameter()
-	{
-		float diameter = 2 * (tire_width * (tire_aspect / 100f));
-		return diameter + (25.4f * rim);
-	}
-
-
-	public override void _Ready()
-	{
-		base._Ready();
-		car = GetParent<Car>();
-	}
-
-	public override void _Process(double delta)
-	{
-		base._Process(delta);
-
-	}
+    public override void _Process(double delta)
+    {
+        base._PhysicsProcess(delta);
+		SuspensionPosition((float) delta);
+    }
 
 }

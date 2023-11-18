@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://dpsewvjm4jm6y"]
+[gd_scene load_steps=16 format=3 uid="uid://dpsewvjm4jm6y"]
 
 [ext_resource type="PackedScene" uid="uid://dxlwpoc8iay1b" path="res://Assets/Roads/road_curve.tscn" id="3_1dkm3"]
 [ext_resource type="PackedScene" uid="uid://lmcqertjfa4m" path="res://Assets/Roads/road_straight.tscn" id="4_ejiun"]
@@ -29,6 +29,12 @@ size = Vector3(100, 0.1, 100)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_xfrl3"]
 albedo_color = Color(0.203922, 0.203922, 0.203922, 1)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_ji1x1"]
+height = 5.0
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_vdy78"]
+height = 5.0
 
 [node name="Node3D" type="Node3D"]
 
@@ -85,8 +91,29 @@ transform = Transform3D(15, 0, 0, 0, 15, 0, 0, 0, 15, -15, 7.5, 15)
 [node name="road_slant" parent="Road" instance=ExtResource("6_lp5ri")]
 transform = Transform3D(15, 0, 0, 0, 15, 0, 0, 0, 15, 15, 3.75, 15)
 
+[node name="bump" type="StaticBody3D" parent="Road"]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, -0.234357, 6.5781)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Road/bump"]
+mesh = SubResource("CylinderMesh_ji1x1")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Road/bump"]
+shape = SubResource("CylinderShape3D_vdy78")
+
+[node name="bump2" type="StaticBody3D" parent="Road"]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, -0.234357, 9.53464)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Road/bump2"]
+mesh = SubResource("CylinderMesh_ji1x1")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Road/bump2"]
+shape = SubResource("CylinderShape3D_vdy78")
+
 [node name="Nissan GTR" parent="." instance=ExtResource("8_m8si7")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.12016, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.93751, 0)
+mass = 818.0
+can_sleep = false
+weight = 50.0
 
 [node name="Camera3D" type="Camera3D" parent="Nissan GTR"]
 transform = Transform3D(-0.273657, 0, -0.961827, 0, 1, 0, 0.961827, 0, -0.273657, -3.94633, 0.894823, 0.136367)
